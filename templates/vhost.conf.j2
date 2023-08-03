@@ -1,0 +1,70 @@
+<VirtualHost *:80>
+{% if item.redirects is defined %}
+{% for redirect in item.redirects %}
+{% if loop.first %}
+{% for source in redirect.source %}
+{% if loop.first %}
+  ServerName {{source}}
+{% else %}
+  ServerAlias {{source}}
+{% endif %}
+{% endfor %}
+{% else %}
+{% for source in redirect.source %}
+  ServerAlias {{source}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !^/\.well\-known/acme\-challenge/
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+{% if item.redirects is defined %}
+{% for redirect in item.redirects %}
+{% if loop.first %}
+{% for source in redirect.source %}
+{% if loop.first %}
+  ServerName {{source}}
+{% else %}
+  ServerAlias {{source}}
+{% endif %}
+{% endfor %}
+{% else %}
+{% for source in redirect.source %}
+  ServerAlias {{source}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if item.certificate is defined %}
+  SSLEngine on
+  SSLCertificateFile /usr/local/etc/ssl/certs/static_certificates/{{ item.certificate.file }}
+  SSLCertificateChainFile /usr/local/etc/ssl/certs/static_certificates/{{ item.certificate.chain }}
+  SSLCertificateKeyFile /usr/local/etc/ssl/certs/static_certificates/{{ item.certificate.key }}
+{% elif item.dehydrated_certificate is defined and dehydrated|cert_exists(item.dehydrated_certificate) %}
+  SSLEngine on
+  SSLCertificateFile {{ dehydrated|cert_fullchain(item.dehydrated_certificate) }}
+  SSLCertificateChainFile {{ dehydrated|cert_fullchain(item.dehydrated_certificate) }}
+  SSLCertificateKeyFile {{ dehydrated|cert_privkey(item.dehydrated_certificate) }}
+{% endif %}
+
+{% if item.redirects is defined %}
+  RewriteEngine On
+{% for redirect in item.redirects %}
+{% for source in redirect.source %}
+  RewriteCond %{HTTP_HOST} ^{{source | regex_escape('posix_basic') }}$ {%- if not loop.last %} [OR]
+{% endif %}
+{% endfor %}
+
+  RewriteRule ^(.*)$ https://{{ redirect.target }} [L,R=301]
+
+{% endfor %}
+{% endif %}
+
+
+</VirtualHost>

@@ -1,0 +1,11 @@
+---
+apache:
+  prefix:
+    config: >-
+      {%- if ansible_system == 'Linux' -%}
+        /etc/apache24
+      {%- else -%}
+        /usr/local/etc/apache24
+      {%- endif -%}
+
+  user: "{{ 'www-data' if ansible_system == 'Linux' else 'www' }}"
