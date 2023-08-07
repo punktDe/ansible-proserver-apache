@@ -18,3 +18,10 @@ provisioner:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 verifier:
   name: ansible
+scenario:
+  name: default
+  test_sequence:
+    - destroy
+    - create
+    - converge
+    - verify

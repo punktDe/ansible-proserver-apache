@@ -1,4 +1,15 @@
 ---
+- name: Create all necessary folders
+  ansible.builtin.file:
+    path: "{{ apache.prefix.config }}/{{ item }}"
+    state: directory
+    owner: root
+    group: "{{ root_group }}"
+    mode: 0755
+  loop:
+    - Includes
+    - conf.d
+
 - name: Disable default file vhosts
   ansible.builtin.file:
     path: "{{ apache.prefix.config }}/Includes/vhosts.conf"
