@@ -46,11 +46,8 @@
   ansible.builtin.command:
     cmd: apachectl -t
 
-- name: Populate service facts
-  ansible.builtin.service_facts:
-
 - name: Deactivate and stop nginx
-  when: "'nginx' in services"
+  failed_when: no
   ansible.builtin.service:
     name: nginx
     state: stopped
