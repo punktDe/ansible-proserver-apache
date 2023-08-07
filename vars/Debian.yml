@@ -1,0 +1,6 @@
+root_group: root
+apache:
+  service_name: apache2
+  prefix:
+    config: /etc/apache2
+  user: www-data

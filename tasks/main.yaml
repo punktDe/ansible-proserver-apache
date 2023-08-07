@@ -1,5 +1,17 @@
+- name: Load OS-specific vars
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+        - main.yml
+      paths:
+        - 'vars'
+
 - name: Install Apache
   ansible.builtin.include_tasks: install.yaml
+  when: ansible_system == 'Linux'
 
 - name: Install the htpasswd files
   ansible.builtin.include_tasks: htpasswd.yaml

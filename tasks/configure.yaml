@@ -14,8 +14,8 @@
 
 - name: Copy Apache module configuration files
   ansible.posix.synchronize:
-    src: files/conf.d
-    dest: "{{ apache.prefix.config }}/conf.d"
+    src: files/conf.d/
+    dest: "{{ apache.prefix.config }}/conf.d/"
     delete: true
     archive: false
     recursive: true
@@ -29,3 +29,25 @@
     dest: "{{ apache.prefix.config }}/Includes/vhost-{{ item.name | lower | regex_replace(' ', '_') }}.conf"
     mode: "0644"
   with_items: "{{ apache.vhosts }}"
+
+- name: Test the config file
+  changed_when: no
+  ansible.builtin.command:
+    cmd: apachectl -t
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Deactivate and stop nginx
+  when: "'nginx' in services"
+  ansible.builtin.service:
+    name: nginx
+    state: stopped
+    enabled: false
+
+- name: Start and enable apache
+  register: apache_started
+  ansible.builtin.service:
+    name: "{{ apache.service_name }}"
+    state: started
+    enabled: true

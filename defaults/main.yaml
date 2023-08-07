@@ -1,11 +1,9 @@
 ---
+dehydrated:
+  httpd_service:
+    name: apache
 apache:
-  prefix:
-    config: >-
-      {%- if ansible_system == 'Linux' -%}
-        /etc/apache2
-      {%- else -%}
-        /usr/local/etc/apache24
-      {%- endif -%}
-  user: "{{ 'www-data' if ansible_system == 'Linux' else 'www' }}"
   htpasswd: {}
+  vhosts:
+    - name: Default proserver welcome page
+      dehydrated_certificate: "{{ inventory_hostname }}"
