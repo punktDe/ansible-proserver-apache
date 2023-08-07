@@ -1,6 +1,1 @@
 root_group: wheel
-apache:
-  service_name: apache24
-  prefix:
-    config: /usr/local/etc/apache24
-  user: www

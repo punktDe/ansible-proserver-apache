@@ -1,8 +1,24 @@
 ---
-dehydrated:
-  httpd_service:
-    name: apache
 apache:
+  service_name: >-
+    {%- if ansible_system == 'Linux' -%}
+      apache2
+    {%- else -%}
+      apache24
+    {%- endif -%}
+  prefix:
+    config: >-
+      {%- if ansible_system == 'Linux' -%}
+        /etc/apache2
+      {%- else -%}
+        /usr/local/etc/apache24
+      {%- endif -%}
+  user: >-
+    {%- if ansible_system == 'Linux' -%}
+      www-data
+    {%- else -%}
+      www
+    {%- endif -%}
   htpasswd: {}
   vhosts:
     - name: Default proserver welcome page
