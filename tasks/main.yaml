@@ -1,31 +1,11 @@
-- import_tasks: htpasswd.yaml
-- import_tasks: logrotate.yaml
+- name: Install Apache
+  ansible.builtin.include_tasks: install.yaml
 
-- name: Disable default file vhosts
-  file:
-    path: /usr/local/etc/apache24/Includes/vhosts.conf
-    state: absent
+- name: Install the htpasswd files
+  ansible.builtin.include_tasks: htpasswd.yaml
 
-- name: Copy main Apache configuration file
-  copy:
-    src: roles/apache/files/httpd.conf
-    dest: /usr/local/etc/apache24/
-    mode: 0644
+- name: Configure logrotate for Apache logs
+  ansible.builtin.include_tasks: logrotate.yaml
 
-- name: Copy Apache module configuration files
-  synchronize:
-    src: roles/apache/files/conf.d
-    dest: /usr/local/etc/apache24/
-    delete: true
-    archive: false
-    recursive: true
-    checksum: true
-  notify: Reload apache
-
-- name: Template VHost files
-  when: apache.vhosts is defined
-  template:
-    src: vhost.conf.j2
-    dest: "{{ apache.prefix.config }}/Includes/vhost-{{ item.name | lower | regex_replace(' ', '_') }}.conf"
-    mode: 0644
-  with_items: "{{ apache.vhosts }}"
+- name: Configure Apache
+  ansible.builtin.include_tasks: configure.yaml

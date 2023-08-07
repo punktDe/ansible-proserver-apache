@@ -1,0 +1,31 @@
+---
+- name: Disable default file vhosts
+  ansible.builtin.file:
+    path: "{{ apache.prefix.config }}/Includes/vhosts.conf"
+    state: absent
+
+- name: Copy main Apache configuration file
+  ansible.builtin.copy:
+    src: files/httpd.conf
+    dest: "{{ apache.prefix.config }}/httpd.conf"
+    mode: "0644"
+    owner: root
+    group: "{{ root_group }}"
+
+- name: Copy Apache module configuration files
+  ansible.posix.synchronize:
+    src: files/conf.d
+    dest: "{{ apache.prefix.config }}/conf.d"
+    delete: true
+    archive: false
+    recursive: true
+    checksum: true
+  notify: Reload apache
+
+- name: Template vhost files
+  when: apache.vhosts is defined
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "{{ apache.prefix.config }}/Includes/vhost-{{ item.name | lower | regex_replace(' ', '_') }}.conf"
+    mode: "0644"
+  with_items: "{{ apache.vhosts }}"

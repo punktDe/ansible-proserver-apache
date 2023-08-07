@@ -1,16 +1,18 @@
 ---
 - name: Test apache config
-  command: sudo apachectl -t
+  changed_when: no
+  ansible.builtin.command:
+    cmd: sudo apachectl -t
   register: apachectl
 
 - name: Restart apache
-  service:
+  ansible.builtin.service:
     name: apache24
     state: restarted
   register: restart_apache_result
 
 - name: Reload apache
-  service:
+  ansible.builtin.service:
     name: apache24
     state: reloaded
   when:

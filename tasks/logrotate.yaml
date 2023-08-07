@@ -1,44 +1,7 @@
 - name: Copy logrotate config file for Apache logs
-  copy:
-    src: roles/apache/files/apache.conf
+  ansible.builtin.copy:
+    src: logrotate.d/apache.conf
     dest: /usr/local/etc/logrotate.d/
-    mode: 0644
-
-- name: Create /root/bin
-  file:
-    path: /root/bin
-    group: "wheel"
-    owner: "root"
-    state: directory
-    mode: 0755
-
-- name: Install anonip
-  get_url:
-    dest: /root/bin
-    group: "wheel"
-    owner: "root"
-    mode: 0755
-    url: https://raw.githubusercontent.com/decix-web-dev/Anonip/main/anonip.py
-
-- name: Copy script for logfile anonymization
-  copy:
-    src: roles/apache/files/anonymize-apache-logs.sh
-    dest: /root/bin
-    group: "wheel"
-    owner: "root"
-    mode: 0755
-
-- name: Create directory for anonymized logfiles
-  file:
-    path: /var/log/httpd-anonymized
-    state: directory
-    mode: 0755
-
-- name: Setup cron job for logfile anonymization
-  cron:
-    name: "anonymize apache logs"
-    minute: "0"
-    hour: "01"
-    user: "root"
-    job: "/root/bin/anonymize-apache-logs.sh"
-    state: present
+    mode: "0644"
+    owner: root
+    group: "{{ root_group }}"

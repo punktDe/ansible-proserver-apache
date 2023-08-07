@@ -1,10 +1,11 @@
 ---
 galaxy_info:
-  namespace: decix
-  company: decix
-  description: this roles prepares the punkt.de proserver to use apache as webserver
-  license: open source
-  min_ansible_version: 2.9.20
+  author: "Punkt.de"
+  license: ""
+  description: "Apache role for Proserver"
+  role_name: "proserver_apache"
+  namespace: "punktde"
+  min_ansible_version: "2.15"
+
 dependencies:
   - role: dehydrated
-  - role: php_fpm
