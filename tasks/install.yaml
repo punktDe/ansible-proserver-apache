@@ -1,4 +1,6 @@
 - name: Install Ansible package 
   when: ansible_system == 'Linux'
   ansible.builtin.package:
-    name: apache2
+    name: 
+      - apache2
+      - rsync
