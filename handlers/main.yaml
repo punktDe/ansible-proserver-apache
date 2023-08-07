@@ -1,12 +1,12 @@
 ---
 - name: Restart apache
-  when: apache_started.changed
+  when: not apache_started.changed
   ansible.builtin.service:
     name: "{{ apache.service_name }}"
     state: restarted
 
 - name: Reload apache
-  when: apache_started.changed
+  when: not apache_started.changed
   ansible.builtin.service:
     name: "{{ apache.service_name }}"
     state: reloaded

@@ -1,4 +1,9 @@
+{% if ansible_local.proserver.routing.with_gate64 -%}
+Listen [::]:87
+<VirtualHost *:80 [::]:87>
+{% else %}
 <VirtualHost *:80>
+{% endif %}
 {% if item.redirects is defined %}
 {% for redirect in item.redirects %}
 {% if loop.first %}
@@ -22,7 +27,12 @@
   RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
 </VirtualHost>
 
+{% if ansible_local.proserver.routing.with_gate64 -%}
+Listen [::]:57
+<VirtualHost *:443 [::]:57>
+{% else %}
 <VirtualHost *:443>
+{% endif %}
 {% if item.redirects is defined %}
 {% for redirect in item.redirects %}
 {% if loop.first %}

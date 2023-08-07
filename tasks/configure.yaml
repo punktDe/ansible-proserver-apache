@@ -34,6 +34,7 @@
   notify: Reload apache
 
 - name: Template vhost files
+  notify: Reload apache
   when: apache.vhosts is defined
   ansible.builtin.template:
     src: vhost.conf.j2
