@@ -10,11 +10,6 @@
     - Includes
     - conf.d
 
-- name: Disable default file vhosts
-  ansible.builtin.file:
-    path: "{{ apache.prefix.config }}/Includes/vhost.conf"
-    state: absent
-
 - name: Copy main Apache configuration file
   ansible.builtin.copy:
     src: files/httpd.conf
@@ -36,16 +31,15 @@
   with_fileglob:
     - "files/conf.d/*.conf"
 
-- name: Template vhost files
-  notify: 
+- name: Template redirect file
+  notify:
     - Test apache config
     - Reload apache
-  when: apache.vhosts is defined
+  when: apache.redirects is defined
   ansible.builtin.template:
-    src: vhost.conf.j2
-    dest: "{{ apache.prefix.config }}/Includes/vhost-{{ item.name | lower | regex_replace(' ', '_') }}.conf"
+    src: moved_permanently.conf.j2
+    dest: "{{ apache.prefix.config }}/Includes/moved_permanently.conf"
     mode: "0644"
-  with_items: "{{ apache.vhosts }}"
 
 - name: Deactivate and stop nginx
   failed_when: no

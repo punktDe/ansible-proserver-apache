@@ -20,6 +20,4 @@ apache:
       www
     {%- endif -%}
   htpasswd: {}
-  vhosts:
-    - name: Default proserver welcome page
-      dehydrated_certificate: "{{ inventory_hostname }}"
+  redirects: {}
