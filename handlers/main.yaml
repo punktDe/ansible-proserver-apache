@@ -1,4 +1,9 @@
 ---
+- name: Test apache config
+  changed_when: no
+  ansible.builtin.command:
+    cmd: apachectl -t
+
 - name: Restart apache
   when: not apache_started.changed
   ansible.builtin.service:

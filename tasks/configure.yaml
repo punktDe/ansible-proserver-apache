@@ -12,7 +12,7 @@
 
 - name: Disable default file vhosts
   ansible.builtin.file:
-    path: "{{ apache.prefix.config }}/Includes/vhosts.conf"
+    path: "{{ apache.prefix.config }}/Includes/vhost.conf"
     state: absent
 
 - name: Copy main Apache configuration file
@@ -24,28 +24,28 @@
     group: "{{ root_group }}"
 
 - name: Copy Apache module configuration files
-  ansible.posix.synchronize:
-    src: files/conf.d/
-    dest: "{{ apache.prefix.config }}/conf.d/"
-    delete: true
-    archive: false
-    recursive: true
-    checksum: true
-  notify: Reload apache
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ apache.prefix.config }}/conf.d/{{ item | basename }}"
+    mode: "0644"
+    owner: root
+    group: "{{ root_group }}"
+  notify:
+    - Test apache config
+    - Reload apache
+  with_fileglob:
+    - "files/conf.d/*.conf"
 
 - name: Template vhost files
-  notify: Reload apache
+  notify: 
+    - Test apache config
+    - Reload apache
   when: apache.vhosts is defined
   ansible.builtin.template:
     src: vhost.conf.j2
     dest: "{{ apache.prefix.config }}/Includes/vhost-{{ item.name | lower | regex_replace(' ', '_') }}.conf"
     mode: "0644"
   with_items: "{{ apache.vhosts }}"
-
-- name: Test the config file
-  changed_when: no
-  ansible.builtin.command:
-    cmd: apachectl -t
 
 - name: Deactivate and stop nginx
   failed_when: no
