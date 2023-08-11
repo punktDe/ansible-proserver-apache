@@ -1,6 +1,6 @@
 {% set http_listeners = ['*:80'] %}
 {% set https_listeners = ['*:443'] %}
-{% if ansible.local.proserver is defined and ansible_local.proserver.routing.with_gate64 -%}
+{% if ansible_local.proserver is defined and ansible_local.proserver.routing.with_gate64 -%}
 {% set _ = http_listeners.append('[::]:87') %}
 {% set _ = https_listeners.append('[::]:57') %}
 {% endif %}
@@ -18,7 +18,7 @@
   DocumentRoot /var/null
   RewriteEngine On
   RewriteCond %{REQUEST_URI} !^/\.well\-known/acme\-challenge/
-  RewriteRule ^(.*)$ {{ dest['url'] }}{{ '$request_uri' if dest['url']|default(true) else '' }} [R=301,L]
+  RewriteRule ^(.*)$ {{ dest['url'] }}{{ '%{REQUEST_URI}' if dest['url']|default(true) else '' }} [R=301,L]
 </VirtualHost>
 {% endfor %}
 
@@ -32,7 +32,7 @@
   DocumentRoot /var/null
   RewriteEngine On
   RewriteCond %{REQUEST_URI} !^/\.well\-known/acme\-challenge/
-  RewriteRule ^(.*)$ {{ dest['url'] }}{{ '$request_uri' if dest['url']|default(true) else '' }} [R=301,L]
+  RewriteRule ^(.*)$ {{ dest['url'] }}{{ '%{REQUEST_URI}' if dest['url']|default(true) else '' }} [R=301,L]
 
   SSLEngine on
   SSLCertificateFile {{ dehydrated | cert_fullchain(src.hostname) }}
